@@ -1,5 +1,7 @@
 REST API created using Python and SQL with the Flask framework. Used to accept and process request data from frontended source to properly Create, Read, Update, and Delete as needed. Download the dependents in requirements.txt to properly run. 
+
 Concepts learned through this project: 
+Familiarity with SQLAlchemy, Python, Flask, HTML.\n
 Learning how to route URLs to Python functions using Flask.
 Learn how to accept and process request data (JSON, URL params, body data) in POST and PUT requests.
 Understand Flask routing and error handling.
