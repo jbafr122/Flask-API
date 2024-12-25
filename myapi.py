@@ -1,6 +1,7 @@
-from flask import Flask 
+from flask import Flask, request
 from flask_sqlalchemy import SQLAlchemy
 from flask_restful import Resource, Api, reqparse, fields, marshal_with, abort
+import bcrypt
 
 app = Flask(__name__) 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
@@ -11,7 +12,8 @@ class UserModel(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(80), unique=True, nullable=False)
     email = db.Column(db.String(80), unique=True, nullable=False)
-
+    password = db.Column(db.String(80), unique=False, nullable=False)    
+    
     def __repr__(self): 
         return f"User(name = {self.name}, email = {self.email})"
 
@@ -24,6 +26,31 @@ userFields = {
     'name':fields.String,
     'email':fields.String,
 }
+@app.route('/register', methods=['POST'])
+def register():
+    data = request.json
+    
+    if (not data.get("name") or not data.get("email") or not data.get("password")):
+        return {"message": "Name, email, and password are required"}, 400
+    
+    if UserModel.query.filter_by(email=data["email"]).first():
+        return {"message": "A user with this email already exists"}, 409
+
+    if UserModel.query.filter_by(name=data["name"]).first():
+        return {"message": "A user with this name already exists"}, 409
+    
+    new_user = UserModel(
+        name=data["name"],
+        email=data["email"],
+        password=data["password"]
+    )
+    try:
+        db.session.add(new_user)
+        db.session.commit()
+        return {"message": "User created successfully"}, 201
+    except:
+        db.session.rollback()
+        return {"message": "Error registering user"}, 500
 
 class Users(Resource):
     @marshal_with(userFields)
