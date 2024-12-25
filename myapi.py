@@ -26,6 +26,7 @@ userFields = {
     'name':fields.String,
     'email':fields.String,
 }
+
 @app.route('/register', methods=['POST'])
 def register():
     data = request.json
@@ -51,6 +52,19 @@ def register():
     except:
         db.session.rollback()
         return {"message": "Error registering user"}, 500
+
+@app.route('/login', methods=['POST'])
+def login():
+    data = request.json
+    if not data.get("email") or not data.get("password"):
+        return {"message": "Email and password are required"}, 400
+    
+    user = UserModel.query.filter_by(email=data["email"]).first()
+    
+    if not user or not data["password"]:
+        return {"message": "Invalid email or passord"}, 401
+    
+    return {"message": f"Welcome {user.name}!"}, 200
 
 class Users(Resource):
     @marshal_with(userFields)
