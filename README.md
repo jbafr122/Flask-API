@@ -11,4 +11,4 @@
 ## Updates I want to implement:
 * Password implementation and 2FA 
 * Checking for valid emails 
-* Implementing the API on an app or website of my own
+* Developing frontend fo API integration
